@@ -1,4 +1,5 @@
 import os
+import stat
 import sys
 
 import pandas as pd
@@ -31,6 +32,27 @@ def explore_structure(df : pd.DataFrame) :
     print("상위 5행을 출력합니다.")
     print(head_result)
     _end_space()
+
+    show_distribution(df)
+
+def show_distribution(df : pd.DataFrame): 
+    category_status = {}
+
+    total_count = len(df)
+
+    for cat in df["category"].unique():
+        category_df = df[df["category"] == cat] 
+
+        count = len(category_df)
+        ratio = count / total_count * 100
+
+        category_status[cat] = {
+            "count": count,
+            "ratio" : ratio
+        }
+
+    for cat, stats in category_status.items():
+        print(f"{cat}: {stats['count']}건, {stats['ratio']:.1f}%")
 
 
 def _end_space():
