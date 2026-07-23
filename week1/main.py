@@ -35,16 +35,16 @@ def explore_structure(df : pd.DataFrame) :
 
     show_distribution(df)
 
-def show_distribution(df : pd.DataFrame): 
+def show_distribution(df : pd.DataFrame):
     category_status = {}
 
-    total_count = len(df)
+    total_rows = len(df)
 
     for cat in df["category"].unique():
         category_df = df[df["category"] == cat] 
 
         count = len(category_df)
-        ratio = count / total_count * 100
+        ratio = count / total_rows * 100
 
         category_status[cat] = {
             "count": count,
@@ -52,7 +52,45 @@ def show_distribution(df : pd.DataFrame):
         }
 
     for cat, stats in category_status.items():
-        print(f"{cat}: {stats['count']}건, {stats['ratio']:.1f}%")
+        print(f"{cat}: {stats['count']}건, {stats['ratio']:.1f}.1f%")
+    _end_space()
+
+    result = check_missing(df)
+
+
+def check_missing(df : pd.DataFrame) -> dict:
+    col_missing_value = df.isnull().sum()
+    total_rows = len(df)
+
+    result = {
+        "missing_columns": {},
+        "no_missing_columns" : []
+    }
+
+    for column, value in col_missing_value.items():
+        ratio = value / total_rows * 100
+
+        if  value >= 1:
+            if ratio < 5:
+                severity = "낮음"
+            elif ratio < 20:
+                severity = "중간"
+            else:
+                severity = "높음"
+
+            result["missing_columns"][column] = {
+                "missing_count" : value,
+                "missing_ratio" : ratio,
+                "severity" : severity
+            }
+            print(f"{column}, {value}, {ratio:.1f}%  심각도 : {severity}입니다. ")
+        else:
+            result["no_missing_columns"].append(column)
+    
+    print(f"결측치 없는 컬럼 목록 : {result['no_missing_columns']}")
+    _end_space()
+
+    return result
 
 
 def _end_space():
@@ -60,6 +98,7 @@ def _end_space():
 
 result = load_data("data/spending.csv")
 explore_structure(result)
+
 
 
 
