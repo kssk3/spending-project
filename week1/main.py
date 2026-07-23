@@ -83,11 +83,12 @@ def check_missing(df : pd.DataFrame) -> dict:
                 "missing_ratio" : ratio,
                 "severity" : severity
             }
-            print(f"{column}, {value}, {ratio:.1f}%  심각도 : {severity}입니다. ")
+            # print(f"{column}, {value}, {ratio:.1f}%  심각도 : {severity}입니다. ")
         else:
             result["no_missing_columns"].append(column)
     
     print(f"결측치 없는 컬럼 목록 : {result['no_missing_columns']}")
+    print(f"결측치 있는 컬럼 목록 : {result['missing_columns']}")
     _end_space()
 
     return result
