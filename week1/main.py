@@ -1,9 +1,11 @@
+from inspect import cleandoc
 import os
 import stat
 import sys
 
 import pandas as pd
 import numpy as np
+from pandas.core.computation.parsing import clean_column_name
 
 
 def load_data(file_path : str) -> pd.DataFrame:
@@ -56,6 +58,7 @@ def show_distribution(df : pd.DataFrame):
     _end_space()
 
     result = check_missing(df)
+    numpy_amount_stats(df, result)
 
 
 def check_missing(df : pd.DataFrame) -> dict:
@@ -83,7 +86,7 @@ def check_missing(df : pd.DataFrame) -> dict:
                 "missing_ratio" : ratio,
                 "severity" : severity
             }
-            # print(f"{column}, {value}, {ratio:.1f}%  심각도 : {severity}입니다. ")
+
         else:
             result["no_missing_columns"].append(column)
     
@@ -94,12 +97,40 @@ def check_missing(df : pd.DataFrame) -> dict:
     return result
 
 
+def numpy_amount_stats(df : pd.DataFrame, data : dict):
+    cleaned = df.filter(["amount"]).dropna()
+    
+    amounts = np.array(cleaned)
+    mean = np.mean(cleaned)
+    std = np.std(cleaned, ddof=1)
+    median = np.median(cleaned)
+    minimum = np.min(cleaned)
+    maximum = np.max(cleaned)
+
+    over_amount = df[cleaned["amount"] > 50000]
+    print(over_amount)
+    _end_space()
+
+    result = df["amount"].describe()
+
+    comparisons = {
+        "mean" : np.isclose(mean, result["mean"]),
+        "std" : np.isclose(std, result["std"]),
+        "median" : np.isclose(median, result["50%"]),
+        "minimum" : np.isclose(minimum, result["min"]),
+        "maximum" : np.isclose(maximum, result["max"])
+    }
+
+    for row, col in comparisons.items():
+        print(f"{row}, {'v' if col else 'x'}")
+
+    _end_space()
+
 def _end_space():
     print("=============")
 
 result = load_data("data/spending.csv")
 explore_structure(result)
-
 
 
 
