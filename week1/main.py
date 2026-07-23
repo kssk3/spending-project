@@ -1,6 +1,5 @@
 from inspect import cleandoc
 import os
-import stat
 import sys
 
 import pandas as pd
@@ -54,7 +53,7 @@ def show_distribution(df : pd.DataFrame):
         }
 
     for cat, stats in category_status.items():
-        print(f"{cat}: {stats['count']}건, {stats['ratio']:.1f}.1f%")
+        print(f"{cat}: {stats['count']}건, {stats['ratio']:.1f}%")
     _end_space()
 
     result = check_missing(df)
@@ -100,7 +99,6 @@ def check_missing(df : pd.DataFrame) -> dict:
 def numpy_amount_stats(df : pd.DataFrame, data : dict):
     cleaned = df.filter(["amount"]).dropna()
     
-    amounts = np.array(cleaned)
     mean = np.mean(cleaned)
     std = np.std(cleaned, ddof=1)
     median = np.median(cleaned)
